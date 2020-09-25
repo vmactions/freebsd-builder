@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: '12'
         check-latest: true
-    - run: npm -i
+    - run: npm install
     - run: node index.js
     - name: Create Release
       id: create_release
