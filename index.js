@@ -15,8 +15,8 @@ async function sleep (ms) {
 async function run() {
   try {
     core.info("Install tesseract");
-    await exec.exec("brewinstalltesseract"]);
-    await exec.exec("pip3installpytesseract"]);
+    await exec.exec("brew install tesseract");
+    await exec.exec("pip3 install pytesseract");
 
 
     let ext="https://download.virtualbox.org/virtualbox/6.1.14/Oracle_VM_VirtualBox_Extension_Pack-6.1.14.vbox-extpack";
