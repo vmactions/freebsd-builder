@@ -29,7 +29,7 @@ async function run() {
     let img = await tc.downloadTool(url);
     core.info("Downloaded file: " + img);
     let vhd = imgName + ".vhd";
-    await exec.exec("xz -d -c -T 0 --verbose " + imgName + ".vhd.xz >" + vhd);
+    await exec.exec("xz -d -c -T 0 --verbose " + img + " > " + vhd);
 
     let vmName = "freebsd";
     core.info("Create VM");
