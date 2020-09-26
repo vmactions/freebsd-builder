@@ -104,6 +104,9 @@ async function run() {
 
     await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
 
+    await exec.exec("zip -9 freebsd-12.1.zip  id_rsa.pub "+ vhd);
+
+
   } catch (error) {
     core.setFailed(error.message);
   }
