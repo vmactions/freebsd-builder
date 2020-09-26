@@ -29,9 +29,9 @@ async function run() {
     let img = await tc.downloadTool(url);
     core.info("Downloaded file: " + img);
     let vhd = imgName + ".vhd";
-    await exec.exec("xz -d -c -T 0 --verbose " + img , [], {listeners:{stdout:(s)=>{
-      fs.appendFileSync(vhd, s);
-    }}});
+    var vhdStream = fs.createWriteStream(vhd);
+    await exec.exec("xz -d -c -T 0 --verbose " + img , [], {outStream: vhdStream});
+    vhdStream.close();
 
     let vmName = "freebsd";
     core.info("Create VM");
@@ -105,9 +105,6 @@ async function run() {
 
     await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
 
-    io.mkdirP("assets");
-    await io.mv("id_rsa.pub", "assets/");
-    await io.mv(vhd, "assets/");
   } catch (error) {
     core.setFailed(error.message);
   }
