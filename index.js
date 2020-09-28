@@ -32,7 +32,7 @@ async function run() {
       core.info("Downloading image: " + url);
       img = await tc.downloadTool(url);
       core.info("Downloaded file: " + img);
-      tc.cacheFile(img, xzName, xzName, url);
+      img = await tc.cacheFile(img, xzName, xzName, url);
     }
 
     let vhd = imgName + ".vhd";
@@ -41,8 +41,10 @@ async function run() {
     if(cachedVhd && !force) {
       core.info("Copy vhd from cache.");
       await io.cp(cachedVhd, vhd);
+      let pub = tc.find("id_rsa.pub", url);
+      await io.cp(pub, "id_rsa.pub");
     } else {
-      await io.mv(img, "./" + vhd + ".xz");
+      await io.cp(img, "./" + vhd + ".xz");
       await exec.exec("xz -d -T 0 --verbose " + vhd + ".xz");
 
       let vmName = "freebsd";
@@ -116,11 +118,10 @@ async function run() {
 
       core.info("Power off");
       await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
-      tc.cacheFile(vhd, vhd, vhd, url);
+      await tc.cacheFile(vhd, vhd, vhd, url);
+      await tc.cacheFile("id_rsa.pub", "id_rsa.pub", "id_rsa.pub", url)
     }
-
     let compressedVhd = "freebsd-12.1.7z"
-
     let vhd7z = tc.find(compressedVhd, url);
     if(vhd7z && !force) {
       core.info("Use " + vhd7z + " from cache");
