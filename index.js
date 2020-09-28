@@ -102,10 +102,11 @@ async function run() {
 
     fs.writeFileSync(__dirname + "/id_rsa.pub", sshkey);
 
+    core.info("Power off");
     await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
 
+    core.info("Compress " + vhd);
     await exec.exec("7z a freebsd-12.1.7z  id_rsa.pub "+ vhd);
-
 
   } catch (error) {
     core.setFailed(error.message);
