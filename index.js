@@ -23,9 +23,10 @@ async function run() {
     //install ext for debug purpose
 
 
-    core.info("Downloading image:");
+
     let imgName = "FreeBSD-12.1-RELEASE-amd64";
     let url="https://download.freebsd.org/ftp/releases/VM-IMAGES/12.1-RELEASE/amd64/Latest/"+imgName+".vhd.xz";
+    core.info("Downloading image: " + url);
     let img = await tc.downloadTool(url);
     core.info("Downloaded file: " + img);
     let vhd = imgName + ".vhd";
