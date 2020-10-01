@@ -41,7 +41,7 @@ async function run() {
     
     await exec.exec("sudo vboxmanage  storageattach "+ vmName + "    --storagectl SATA --port 0  --device 0  --type hdd --medium " + vhd);
     
-    await exec.exec("sudo  vboxmanage modifyvm "+ vmName + " --vrde on  --vrdeport 33389");
+    await exec.exec("sudo vboxmanage modifyvm "+ vmName + " --vrde on  --vrdeport 33389");
 
     await exec.exec("sudo vboxmanage modifyvm "+ vmName + "  --natpf1 'guestssh,tcp,,2222,,22'");
 
@@ -104,6 +104,7 @@ async function run() {
     fs.writeFileSync(__dirname + "/id_rsa.pub", sshkey);
 
     core.info("Power off");
+    await exec.exec("ssh -p 2222 root@localhost", [], {input: 'shutdown -p now'});
     await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
 
     core.info("Compress " + vhd);
