@@ -110,7 +110,7 @@ async function run() {
       core.info("Sleep 2 seconds");
       await sleep(2000);
       let std="";
-      exec.exec("sudo vboxmanage list runningvms", [], { listeners: {stdout:(s)=>{
+      await exec.exec("sudo vboxmanage list runningvms", [], { listeners: {stdout:(s)=>{
         std+=s;
         core.info(s);
       }}});
