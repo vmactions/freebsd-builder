@@ -105,6 +105,8 @@ async function run() {
 
     core.info("Power off");
     await exec.exec("ssh -p 2222 root@localhost", [], {input: 'shutdown -p now'});
+    core.info("Sleep 5 seconds");
+    await sleep(5000)
     await exec.exec("sudo vboxmanage controlvm "+ vmName + " poweroff");
 
     core.info("Compress " + vhd);
