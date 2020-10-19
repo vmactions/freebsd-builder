@@ -113,7 +113,7 @@ async function run() {
     core.info("sleep 300 seconds for first boot");
     let loginTag = "FreeBSD/amd64 (freebsd) (ttyv0)";
 
-    await waitFor(loginTag);
+    await waitFor(vmName, loginTag);
 
     core.info("Enable ssh");
 
