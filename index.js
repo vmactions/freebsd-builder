@@ -119,7 +119,7 @@ async function run() {
 
     let init = __dirname + "/init.txt";
     core.info(init);
-    await vboxmanage(vmName, "controlvm ", " keyboardputfile ", init);
+    await vboxmanage(vmName, "controlvm ", " keyboardputfile " + init);
 
     await exec.exec("ssh freebsd", [], { input: 'ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ""' });
     await exec.exec("ssh freebsd", [], { input: 'echo "StrictHostKeyChecking=accept-new" >>~/.ssh/config' });
