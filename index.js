@@ -10,6 +10,9 @@ async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+async function vboxmanage(vmName, cmd, args = "") {
+  await exec.exec("sudo  vboxmanage " + cmd + "   " + vmName + "   " + args);
+}
 
 // most @actions toolkit packages have async methods
 async function run() {
