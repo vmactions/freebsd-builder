@@ -3,7 +3,7 @@ const exec = require('@actions/exec');
 const tc = require('@actions/tool-cache');
 const io = require('@actions/io');
 const fs = require("fs");
-
+const path = require("path");
 
 
 async function sleep(ms) {
