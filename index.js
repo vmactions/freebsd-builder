@@ -105,7 +105,7 @@ async function run() {
 
     await vboxmanage(vmName, "modifyvm ", "  --natpf1 'guestssh,tcp,," + sshport + ",,22'");
 
-    await vboxmanage(vmName, "modifyhd ", vhd + " --resize  100000");
+    await vboxmanage("", "modifyhd ", vhd + " --resize  100000");
 
     await vboxmanage(vmName, "startvm ", " --type headless");
 
