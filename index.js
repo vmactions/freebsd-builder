@@ -84,8 +84,8 @@ async function run() {
 
 
 
-    let imgName = "FreeBSD-12.1-RELEASE-amd64";
-    let url = "https://download.freebsd.org/ftp/releases/VM-IMAGES/12.1-RELEASE/amd64/Latest/" + imgName + ".vhd.xz";
+    let imgName = "FreeBSD-12.2-RELEASE-amd64";
+    let url = "https://download.freebsd.org/ftp/releases/VM-IMAGES/12.2-RELEASE/amd64/Latest/" + imgName + ".vhd.xz";
     core.info("Downloading image: " + url);
     let img = await tc.downloadTool(url);
     core.info("Downloaded file: " + img);
@@ -159,13 +159,13 @@ async function run() {
       }
     }
 
-    let ova = "freebsd-12.1.ova";
+    let ova = "freebsd-12.2.ova";
     core.info("Export " + ova);
     await vboxmanage(vmName, "export", "--output " + ova);
     await exec.exec("sudo chmod 666 " + ova);
 
     core.info("Compress " + vhd);
-    await exec.exec("7z a freebsd-12.1.7z  id_rsa.pub " + ova);
+    await exec.exec("7z a freebsd-12.2.7z  id_rsa.pub " + ova);
 
   } catch (error) {
     core.setFailed(error.message);
