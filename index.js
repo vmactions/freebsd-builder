@@ -111,7 +111,7 @@ async function run() {
 
 
     core.info("sleep 300 seconds for first boot");
-    let loginTag = "FreeBSD/amd64 (freebsd) (ttyv0)";
+    let loginTag = "FreeBSD/amd64 (freebsd) (ttyv";
 
     await waitFor(vmName, loginTag);
 
