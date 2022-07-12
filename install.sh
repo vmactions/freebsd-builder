@@ -166,7 +166,7 @@ echo 'PasswordAuthentication yes'  >> /etc/ssh/sshd_config
 
 echo 'AcceptEnv   *'  >> /etc/ssh/sshd_config
 
-ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ""
+ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ''
 
 
 service sshd restart
