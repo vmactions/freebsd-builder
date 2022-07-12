@@ -74,11 +74,11 @@ fi
 if [ ! -e "$osname.vhd.xz" ]; then
   echo "Downloading vhd from: $VM_VHD_LINK"
   wget -q -O $osname.vhd.xz "$VM_VHD_LINK"
-  ls -lah
+
 fi
 
 if [ ! -e "$osname.vhd" ]; then
-  xz -d -T 0 --verbose  "$osname.vhd.xz "
+  xz -d -T 0 --verbose  "$osname.vhd.xz"
 fi
 
 
