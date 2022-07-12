@@ -152,7 +152,7 @@ gpart resize -i 3  -a 4k ada0
 
 growfs   -N  /dev/ada0p3
 
-echo 'sshd_enable="YES"' >>/etc/rc.conf
+echo 'sshd_enable=\"YES\"' >>/etc/rc.conf
 
 service sshd start
 
@@ -166,9 +166,8 @@ echo 'PasswordAuthentication yes'  >> /etc/ssh/sshd_config
 
 echo 'AcceptEnv   *'  >> /etc/ssh/sshd_config
 
-mkdir -p ~/.ssh
+ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ""
 
-chmod -R 600 ~/.ssh
 
 service sshd restart
 
@@ -222,10 +221,8 @@ $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  mac.id_rsa
 
-zip -0 -s 2000m $ova.zip  $ova  id_rsa.pub  mac.id_rsa
 
-
-
+7z a $ova.7z  id_rsa.pub $ova  mac.id_rsa
 
 
 
