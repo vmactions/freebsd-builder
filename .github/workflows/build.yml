@@ -9,19 +9,15 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12'
-        check-latest: true
-    - run: npm install
-    - run: node index.js
+    - run: |
+        bash install.sh conf/freebsd-13.1.conf
     - name: Get release
       if: "contains(github.ref, 'refs/tags/')"
       id: get_release
-      uses: bruceadams/get-release@v1.2.1
+      uses: bruceadams/get-release@v1.2.3
       env:
         GITHUB_TOKEN: ${{ github.token }}
     - name: Upload Release Asset
@@ -32,8 +28,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.get_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ./freebsd-13.0.7z
-        asset_name: freebsd-13.0.7z
-        asset_content_type: application/x-7z-compressed
+        asset_path: ./freebsd-13.1.ova.zip
+        asset_name: freebsd-13.1.ova.zip
+        asset_content_type: application/zip
 
 
