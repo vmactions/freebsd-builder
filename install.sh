@@ -217,12 +217,16 @@ $vmsh shutdownVM $osname
 
 ova="$VM_OVA_NAME.ova"
 
+
+echo "Exporting $ova"
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  mac.id_rsa
 
-
+echo "Compressing $ova.7z"
 7z a $ova.7z  id_rsa.pub $ova  mac.id_rsa
+
+ls -lah
 
 
 
