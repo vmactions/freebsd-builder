@@ -119,7 +119,9 @@ sleep 2
 
 ###############################################
 
+waitForText "Welcome to FreeBSD"
 
+$vmsh enter  $osname
 
 
 waitForText "FreeBSD/amd64 (freebsd) (ttyv"
@@ -175,9 +177,6 @@ passwd
 
 
 
-exit
-
-
 
 " >enablessh.txt
 
@@ -190,7 +189,10 @@ echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized
 
 echo >>enablessh.txt
 echo >>enablessh.txt
+echo "exit">>enablessh.txt
 echo >>enablessh.txt
+
+
 
 
 $vmsh inputFile $osname enablessh.txt
