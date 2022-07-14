@@ -119,9 +119,6 @@ sleep 2
 
 ###############################################
 
-waitForText "Welcome to FreeBSD"
-
-$vmsh enter  $osname
 
 
 waitForText "$VM_LOGIN_TAG"
