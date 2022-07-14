@@ -124,7 +124,7 @@ waitForText "Welcome to FreeBSD"
 $vmsh enter  $osname
 
 
-waitForText "FreeBSD/amd64 (freebsd) (ttyv"
+waitForText "$VM_LOGIN_TAG"
 
 sleep 3
 
