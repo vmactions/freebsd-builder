@@ -1,0 +1,36 @@
+name: "Manual"
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - '*'
+    paths:
+      - '.github/workflows/manual.yml'
+      - 'conf/*'
+
+
+jobs:
+  build:
+    runs-on: macos-12
+    env:
+      RELEASE: "13.0"
+      DEBUG: 1
+      VM_OS_NAME: freebsd
+    steps:
+    - uses: actions/checkout@v2
+    - name: Sleep
+      run: |
+        for i in $(seq 1 10) ; do echo $i; sleep 1; done
+        echo "please loging to ssh below, and run 'bash build.sh conf/freebsd-$RELEASE.conf'"
+        touch /tmp/keepalive
+        
+    - uses: neilpang/debugger-action@master
+
+#    - run: |
+#        bash build.sh conf/freebsd-$RELEASE.conf
+
+
+
+
+
