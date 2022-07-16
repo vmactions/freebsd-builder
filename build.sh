@@ -140,67 +140,24 @@ sleep 1
 inputKeys "string root ; enter ; enter"
 
 
-echo "
-
-echo '=================== start ===='
 
 
-gpart show ada0
-
-
-gpart recover ada0
-
-
-gpart resize -i 3  -a 4k ada0
-
-
-growfs   -N  /dev/ada0p3
+cat enablessh.txt >enablessh.local
 
 
 
-echo 'sshd_enable=\"YES\"' >>/etc/rc.conf
-
-service sshd start
-
-echo '' >>  /etc/ssh/sshd_config
-
-echo 'PermitRootLogin yes' >>  /etc/ssh/sshd_config
-
-echo 'PermitEmptyPasswords yes' >> /etc/ssh/sshd_config
-
-echo 'PasswordAuthentication yes'  >> /etc/ssh/sshd_config
-
-echo 'AcceptEnv   *'  >> /etc/ssh/sshd_config
-
-ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ''
+echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
 
 
-service sshd restart
-
-passwd
+echo >>enablessh.local
+echo >>enablessh.local
+echo "exit">>enablessh.local
+echo >>enablessh.local
 
 
 
 
-
-" >enablessh.txt
-
-
-
-
-
-echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.txt
-
-
-echo >>enablessh.txt
-echo >>enablessh.txt
-echo "exit">>enablessh.txt
-echo >>enablessh.txt
-
-
-
-
-$vmsh inputFile $osname enablessh.txt
+$vmsh inputFile $osname enablessh.local
 
 ###############################################################
 
