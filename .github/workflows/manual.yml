@@ -2,12 +2,6 @@ name: "Manual"
 on:
   workflow_dispatch:
 
-  push:
-    branches:
-      - '*'
-    paths:
-      - '.github/workflows/manual.yml'
-      - 'conf/*'
 
 
 jobs:
