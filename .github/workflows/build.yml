@@ -37,7 +37,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
-          freebsd-${{ matrix.os }}.ova.zip
+          freebsd-${{ matrix.os }}.ova
           freebsd-${{ matrix.os }}-id_rsa.pub
           freebsd-${{ matrix.os }}-mac.id_rsa
 

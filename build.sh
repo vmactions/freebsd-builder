@@ -163,7 +163,7 @@ $vmsh inputFile $osname enablessh.local
 ###############################################################
 
 
-ssh $osname 'cat ~/.ssh/id_rsa.pub' >id_rsa.pub
+ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
 
 
 ssh $osname  "$VM_SHUTDOWN_CMD"
@@ -180,13 +180,13 @@ $vmsh shutdownVM $osname
 
 
 
-ova="$VM_OVA_NAME.ova"
+ova="$osname-$VM_RELEASE.ova"
 
 
 echo "Exporting $ova"
 $vmsh exportOVA $osname "$ova"
 
-cp ~/.ssh/id_rsa  mac.id_rsa
+cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-mac.id_rsa
 
 
 
