@@ -32,13 +32,13 @@ jobs:
     - name: Upload Release Asset
       if: "contains(github.ref, 'refs/tags/')"
       id: upload-release-asset
-      uses: actions/upload-release-asset@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ./freebsd-${{ matrix.os }}.ova.7z
-        asset_name: freebsd-${{ matrix.os }}.ova.7z
-        asset_content_type: application/x-7z-compressed
+        files: |
+          freebsd-${{ matrix.os }}.ova.zip
+          freebsd-${{ matrix.os }}-id_rsa.pub
+          freebsd-${{ matrix.os }}-mac.id_rsa
 
 

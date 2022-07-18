@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-
-
 set -e
 
 
@@ -159,12 +157,16 @@ echo >>enablessh.local
 
 $vmsh inputFile $osname enablessh.local
 
+
+
+
 ###############################################################
 
 
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >id_rsa.pub
 
-ssh $osname  "/sbin/shutdown -p now"
+
+ssh $osname  "$VM_SHUTDOWN_CMD"
 
 sleep 5
 
@@ -186,10 +188,8 @@ $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  mac.id_rsa
 
-echo "Compressing $ova.7z"
-7z a $ova.7z  id_rsa.pub $ova  mac.id_rsa
 
-ls -lah
+
 
 
 

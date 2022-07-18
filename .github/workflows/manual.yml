@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
 
 
-
 jobs:
   build:
     runs-on: macos-12
@@ -23,7 +22,10 @@ jobs:
     - name: Sleep
       run: |
         for i in $(seq 1 10) ; do echo $i; sleep 1; done
-        echo "please loging to ssh below, and run 'bash build.sh conf/freebsd-$RELEASE.conf'"
+        echo "please loging to ssh below, and run:"
+        echo "============================="
+        echo "bash build.sh conf/freebsd-$RELEASE.conf"
+        echo "============================="
         touch /tmp/keepalive
         
     - uses: neilpang/debugger-action@master
