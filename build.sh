@@ -193,6 +193,8 @@ $vmsh exportOVA $osname "$ova"
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-mac.id_rsa
 
 
+ls -lah
+
 
 
 
