@@ -2,19 +2,6 @@
 
 
 
-echo '=================== start ===='
-
-
-gpart show ada0
-
-
-gpart recover ada0
-
-
-gpart resize -i 3  -a 4k ada0
-
-
-growfs   -N  /dev/ada0p3
 
 
 
@@ -38,6 +25,7 @@ ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ''
 service sshd restart
 
 passwd
+
 
 
 
