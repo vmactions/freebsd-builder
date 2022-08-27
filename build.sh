@@ -159,8 +159,18 @@ echo >>enablessh.local
 
 $vmsh inputFile $osname enablessh.local
 
+ssh $osname sh <<EOF
+echo 'StrictHostKeyChecking=accept-new' >.ssh/config
+
+echo "Host host" >>.ssh/config
+echo "     HostName  10.0.2.2" >>.ssh/config
+echo "     User runner" >>.ssh/config
+
+EOF
+
 
 ###############################################################
+
 
 if [ -e "hooks/postBuild.sh" ]; then
   ssh $osname <"hooks/postBuild.sh"
