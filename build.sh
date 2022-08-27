@@ -22,7 +22,7 @@ sshport=$VM_SSH_PORT
 
 opts="$VM_OPTS"
 
-vboxlink="$VM_VBOX_LINK"
+vboxlink="${SEC_VBOX:-$VM_VBOX_LINK}"
 
 
 vmsh="$VM_VBOX"
