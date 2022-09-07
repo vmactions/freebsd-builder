@@ -15,7 +15,7 @@ on:
 
 
 concurrency: 
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 
@@ -25,6 +25,8 @@ jobs:
       matrix:
         os: ["12.3", "13.0", "13.1"]
     runs-on: macos-12
+    env:
+      SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
     - uses: actions/checkout@v2
     - run: |

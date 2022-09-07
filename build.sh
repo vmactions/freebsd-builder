@@ -53,6 +53,7 @@ inputKeys() {
 
 
 if [ ! -e "$vmsh" ] ; then
+  echo "Downloading $vboxlink"
   wget -O "$vmsh" "$vboxlink"
 fi
 
