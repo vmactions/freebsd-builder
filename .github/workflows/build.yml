@@ -9,6 +9,7 @@ on:
       - '*.txt'
       - 'conf/*'
       - 'hooks/*'
+  workflow_dispatch:
 
   release:
     types: [ created ]
