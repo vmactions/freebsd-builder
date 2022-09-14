@@ -24,3 +24,8 @@ service ntpd enable
 
 service ntpd start
 
+IGNORE_OSVERSION=yes pkg  install  -y  tree
+
+
+
+
