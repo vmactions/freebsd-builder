@@ -166,6 +166,7 @@ echo 'StrictHostKeyChecking=accept-new' >.ssh/config
 echo "Host host" >>.ssh/config
 echo "     HostName  10.0.2.2" >>.ssh/config
 echo "     User runner" >>.ssh/config
+echo "     ServerAliveInterval 1" >>.ssh/config
 
 EOF
 
