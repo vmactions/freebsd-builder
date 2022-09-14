@@ -174,7 +174,7 @@ EOF
 
 
 if [ -e "hooks/postBuild.sh" ]; then
-  ssh $osname <"hooks/postBuild.sh"
+  ssh $osname sh<"hooks/postBuild.sh"
 fi
 
 
