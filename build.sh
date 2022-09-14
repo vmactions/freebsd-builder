@@ -181,6 +181,11 @@ fi
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
 
 
+if [ "$VM_PRE_INSTALL_PKGS" ]; then
+  echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+fi
+
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
 sleep 5
