@@ -24,7 +24,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["12.3", "13.0", "13.1"]
+        os: ["13.2"]
     runs-on: macos-12
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
