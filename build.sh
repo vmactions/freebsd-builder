@@ -161,6 +161,15 @@ echo >>enablessh.local
 $vmsh inputFile $osname enablessh.local
 
 ssh $osname sh <<EOF
+cat <<CONF > /boot/loader.conf
+boot_multicons=YES
+boot_serial=YES
+comconsole_speed=9600
+CONF
+
+EOF
+
+ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=accept-new' >.ssh/config
 
 echo "Host host" >>.ssh/config
