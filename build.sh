@@ -60,7 +60,7 @@ fi
 chmod +x "$vmsh"
 
 
-$vmsh addSSHHost  $osname $sshport
+
 
 
 
@@ -70,14 +70,14 @@ if ! $vmsh clearVM $osname; then
   echo "vm does not exists"
 fi
 
-if [ ! -e "$osname.vhd.xz" ]; then
-  echo "Downloading vhd from: $VM_VHD_LINK"
-  wget -q -O $osname.vhd.xz "$VM_VHD_LINK"
+if [ ! -e "$osname.qcow2.xz" ]; then
+  echo "Downloading qcow2 from: $VM_VHD_LINK"
+  wget -q -O $osname.qcow2.xz "$VM_VHD_LINK"
 
 fi
 
-if [ ! -e "$osname.vhd" ]; then
-  xz -d -T 0 --verbose  "$osname.vhd.xz"
+if [ ! -e "$osname.qcow2" ]; then
+  xz -d -T 0 --verbose  "$osname.qcow2.xz"
 fi
 
 
@@ -99,20 +99,6 @@ sleep $_sleep
 $vmsh startVM $osname
 
 sleep 2
-
-
-
-
-
-#$vmsh  processOpts  $osname  "$opts"
-
-
-#$vmsh shutdownVM $osname
-
-
-#$vmsh detachISO $osname
-
-#$vmsh startVM $osname
 
 
 
@@ -174,6 +160,11 @@ EOF
 ###############################################################
 
 
+
+$vmsh addSSHHost  $osname
+
+
+
 if [ -e "hooks/postBuild.sh" ]; then
   ssh $osname sh<"hooks/postBuild.sh"
 fi
@@ -201,10 +192,11 @@ $vmsh shutdownVM $osname
 
 
 
-ova="$osname-$VM_RELEASE.ova"
+ova="$osname-$VM_RELEASE.qcow2"
 
 
 echo "Exporting $ova"
+
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-mac.id_rsa
