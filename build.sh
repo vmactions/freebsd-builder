@@ -126,6 +126,9 @@ inputKeys "string root ; enter ; enter"
 
 
 
+if [ ! -e ~/.ssh/id_rsa ] ; then 
+  ssh-keygen -f  ~/.ssh/id_rsa -q -N "" 
+fi
 
 cat enablessh.txt >enablessh.local
 
