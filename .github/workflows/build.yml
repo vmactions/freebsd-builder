@@ -35,6 +35,12 @@ jobs:
       with:
         protocol: http
         port: 8000
+    - name: Run vnc tunnel
+      id: test
+      uses: vmactions/ngrok-tunnel@v0.0.1
+      with:
+        protocol: tcp
+        port: 5900
     - run: |
         bash build.sh conf/freebsd-${{ matrix.os }}.conf
     - name: Upload Release Asset
