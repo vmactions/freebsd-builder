@@ -157,7 +157,7 @@ ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=accept-new' >.ssh/config
 
 echo "Host host" >>.ssh/config
-echo "     HostName  10.0.2.2" >>.ssh/config
+echo "     HostName  192.168.122.1" >>.ssh/config
 echo "     User runner" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
 
@@ -193,6 +193,7 @@ sleep 5
 
 $vmsh shutdownVM $osname
 
+sleep 30
 
 ##############################################################
 
