@@ -19,7 +19,7 @@ jobs:
       uses: vmactions/ngrok-tunnel@v0.0.1
       with:
         protocol: tcp
-        port: 3390
+        port: 5900
     - name: Sleep
       run: |
         for i in $(seq 1 10) ; do echo $i; sleep 1; done
