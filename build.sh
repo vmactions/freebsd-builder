@@ -146,6 +146,10 @@ echo >>enablessh.local
 
 $vmsh inputFile $osname enablessh.local
 
+
+$vmsh addSSHHost  $osname
+
+
 ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=accept-new' >.ssh/config
 
@@ -161,7 +165,7 @@ EOF
 
 
 
-$vmsh addSSHHost  $osname
+
 
 
 
