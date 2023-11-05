@@ -88,14 +88,6 @@ $vmsh createVMFromVHD $osname $ostype $sshport
 $vmsh startWeb $osname
 
 
-
-$vmsh startCF
-
-
-_sleep=20
-echo "Sleep $_sleep seconds, please open the link in your browser."
-sleep $_sleep
-
 $vmsh startVM $osname
 
 sleep 2

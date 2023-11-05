@@ -29,7 +29,12 @@ jobs:
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - uses: vmactions/cf-tunnel@v0
+      id: tunnel
+      with:
+        protocol: http
+        port: 8000
     - run: |
         bash build.sh conf/freebsd-${{ matrix.os }}.conf
     - name: Upload Release Asset
