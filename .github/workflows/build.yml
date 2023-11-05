@@ -42,6 +42,6 @@ jobs:
         files: |
           freebsd-${{ matrix.os }}.qcow2.xz
           freebsd-${{ matrix.os }}-id_rsa.pub
-          freebsd-${{ matrix.os }}-mac.id_rsa
+          freebsd-${{ matrix.os }}-host.id_rsa
 
 

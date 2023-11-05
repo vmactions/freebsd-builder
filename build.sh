@@ -207,7 +207,7 @@ echo "Exporting $ova"
 
 $vmsh exportOVA $osname "$ova"
 
-cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-mac.id_rsa
+cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
 
 ls -lah
