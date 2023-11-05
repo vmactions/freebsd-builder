@@ -9,6 +9,16 @@ echo 'sshd_enable="YES"' >>/etc/rc.conf
 
 service sshd start
 
+
+service sendmail stop
+echo 'sendmail_enable="NONE"' >>/etc/rc.conf
+echo 'sendmail_submit_enable="NO"' >>/etc/rc.conf
+echo 'sendmail_outbound_enable="NO"' >>/etc/rc.conf
+echo 'sendmail_msp_queue_enable="NO"' >>/etc/rc.conf
+
+
+
+
 echo '' >>  /etc/ssh/sshd_config
 
 echo 'PermitRootLogin yes' >>  /etc/ssh/sshd_config
