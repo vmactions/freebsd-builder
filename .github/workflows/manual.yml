@@ -33,7 +33,7 @@ jobs:
         echo "bash build.sh conf/freebsd-$RELEASE.conf"
         echo "============================="
         touch /tmp/keepalive
-        
+
     - uses: neilpang/debugger-action@master
 
 #    - run: |
