@@ -30,7 +30,8 @@ jobs:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
     - uses: actions/checkout@v3
-    - uses: vmactions/cf-tunnel@v0
+    - name: Creating Web console
+      uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http

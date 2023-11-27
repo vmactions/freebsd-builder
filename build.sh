@@ -61,7 +61,7 @@ chmod +x "$vmsh"
 
 
 
-
+$vmsh startWeb $osname
 
 
 $vmsh setup 
@@ -85,13 +85,12 @@ $vmsh createVMFromVHD $osname $ostype $sshport
 
 
 
-$vmsh startWeb $osname
+
 
 
 $vmsh startVM $osname
 
 sleep 2
-
 
 
 ###############################################
@@ -159,12 +158,9 @@ EOF
 ###############################################################
 
 
-
-
-
-
-
 if [ -e "hooks/postBuild.sh" ]; then
+  echo "hooks/postBuild.sh"
+  cat "hooks/postBuild.sh"
   ssh $osname sh<"hooks/postBuild.sh"
 fi
 
@@ -196,7 +192,6 @@ ova="$osname-$VM_RELEASE.qcow2"
 
 
 echo "Exporting $ova"
-
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
@@ -205,6 +200,20 @@ cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 ls -lah
 
 
+##############################################################
 
+echo "Checking the packages: $VM_RSYNC_PKG $VM_SSHFS_PKG"
+
+if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
+  echo "skip"
+else
+  $vmsh startVM $osname
+  sleep 2
+  waitForText "$VM_LOGIN_TAG"
+
+  sleep 2
+
+  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
+fi
 
 
