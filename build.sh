@@ -29,7 +29,7 @@ vmsh="$VM_VBOX"
 
 
 export VM_OS_NAME
-
+export VM_RELEASE
 
 
 ##############################################################
@@ -125,7 +125,7 @@ cat enablessh.txt >enablessh.local
 
 
 #add ssh key twice, to avoid bugs.
-echo "echo '$(base64  -w 0  ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
+echo "echo '$(base64 -w 0 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
 echo "" >>enablessh.local
 
 echo "echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys" >>enablessh.local
@@ -140,6 +140,8 @@ echo >>enablessh.local
 
 $vmsh inputFile $osname enablessh.local
 
+
+###############################################################
 
 $vmsh addSSHHost  $osname
 
@@ -211,7 +213,6 @@ else
   $vmsh startVM $osname
   sleep 2
   waitForText "$VM_LOGIN_TAG"
-
   sleep 2
 
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
