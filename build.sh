@@ -238,6 +238,7 @@ echo "Checking the packages: $VM_RSYNC_PKG $VM_SSHFS_PKG"
 if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
   echo "skip"
 else
+  $vmsh addSSHAuthorizedKeys $osname-$VM_RELEASE-id_rsa.pub
   $vmsh startVM $osname
   $vmsh waitForVMReady $osname
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
