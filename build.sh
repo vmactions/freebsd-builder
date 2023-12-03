@@ -175,6 +175,31 @@ if [ "$VM_PRE_INSTALL_PKGS" ]; then
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
 
+
+#upload reboot.sh
+if [ -e "hooks/reboot.sh" ]; then
+  echo "hooks/reboot.sh"
+  cat "hooks/reboot.sh"
+  scp hooks/reboot.sh $osname:/reboot.sh
+else
+  ssh "$osname" "cat - >/reboot.sh" <<EOF
+sleep 5
+ssh host "touch $osname.rebooted"
+EOF
+fi
+
+
+#set cronjob
+ssh "$osname" sh <<EOF
+chmod +x /reboot.sh
+if uname -a | grep SunOS >/dev/null; then
+crontab -l | {  cat;  echo "@reboot /reboot.sh";   } | crontab --
+else
+crontab -l | {  cat;  echo "@reboot /reboot.sh";   } | crontab -
+fi
+EOF
+
+
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
 sleep 5
@@ -211,10 +236,7 @@ if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
   echo "skip"
 else
   $vmsh startVM $osname
-  sleep 2
-  waitForText "$VM_LOGIN_TAG"
-  sleep 2
-
+  $vmsh waitForVMReady $osname
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
 fi
 
