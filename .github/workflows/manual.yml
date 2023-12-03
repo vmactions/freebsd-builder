@@ -13,7 +13,7 @@ jobs:
       NGROK_TOKEN : ${{ secrets.NGROK_TOKEN }}
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
