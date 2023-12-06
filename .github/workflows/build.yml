@@ -9,6 +9,15 @@ on:
       - '*.txt'
       - 'conf/*'
       - 'hooks/*'
+  pull_request:
+    branches:
+      - '*'
+    paths:
+      - '*.sh'
+      - '.github/workflows/build.yml'
+      - '*.txt'
+      - 'conf/*'
+      - 'hooks/*'
   workflow_dispatch:
 
   release:
