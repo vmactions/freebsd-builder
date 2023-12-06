@@ -87,6 +87,7 @@ $vmsh createVMFromVHD $osname $ostype $sshport
 
 
 
+sleep 5
 
 
 
@@ -200,9 +201,15 @@ EOF
 
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
-sleep 5
+sleep 30
 
 ###############################################################
+
+if $vmsh isRunning $osname; then
+  if !$vmsh shutdownVM $osname; then
+    echo "shutdown error"
+  fi
+fi
 
 while $vmsh isRunning $osname; do
   sleep 5
