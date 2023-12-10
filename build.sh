@@ -32,6 +32,7 @@ export VM_OS_NAME
 export VM_RELEASE
 export VM_OCR
 export VM_DISK
+export VM_ARCH
 
 
 ##############################################################
