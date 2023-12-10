@@ -7,19 +7,18 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
-      RELEASE: "13.2"
       DEBUG: 1
-      VM_OS_NAME: freebsd
       NGROK_TOKEN : ${{ secrets.NGROK_TOKEN }}
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
     - uses: actions/checkout@v4
-    - uses: vmactions/cf-tunnel@v0
+    - name: Creating web console
+      uses: vmactions/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
         port: 8000
-    - name: Run establish a ngrok tunnel
+    - name: Run vnc tunnel
       id: test
       uses: vmactions/ngrok-tunnel@v0.0.1
       with:
@@ -28,16 +27,16 @@ jobs:
     - name: Sleep
       run: |
         for i in $(seq 1 10) ; do echo $i; sleep 1; done
+        latest=$(cat $(ls conf/freebsd-*.conf | tail -1) | grep VM_RELEASE | cut -d = -f 2)
         echo "please loging to ssh below, and run:"
         echo "============================="
-        echo "bash build.sh conf/freebsd-$RELEASE.conf"
+        echo "bash build.sh conf/freebsd-$latest.conf"
         echo "============================="
         touch /tmp/keepalive
 
     - uses: neilpang/debugger-action@master
 
-#    - run: |
-#        bash build.sh conf/freebsd-$RELEASE.conf
+
 
 
 

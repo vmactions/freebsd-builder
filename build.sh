@@ -72,24 +72,53 @@ if ! $vmsh clearVM $osname; then
   echo "vm does not exists"
 fi
 
-if [ ! -e "$osname.qcow2.xz" ]; then
-  echo "Downloading qcow2 from: $VM_VHD_LINK"
-  wget -q -O $osname.qcow2.xz "$VM_VHD_LINK"
 
+if [ "$VM_ISO_LINK" ]; then
+  $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
+
+  sleep 2
+
+  if [ -e "hooks/installOpts.sh" ]; then
+    echo "hooks/installOpts.sh"
+    cat "hooks/installOpts.sh"
+    . "hooks/installOpts.sh"
+  else
+    $vmsh  processOpts  $osname  "$opts"
+  
+    echo "sleep 60 seconds. just wait"
+    sleep 60
+  
+    if $vmsh isRunning $osname; then
+      if ! $vmsh shutdownVM $osname; then
+        echo "shutdown error"
+      fi
+      if ! $vmsh destroyVM $osname; then
+        echo "destroyVM error"
+      fi
+    fi
+  fi
+
+  while $vmsh isRunning $osname; do
+    sleep 5
+  done
+
+elif [ "$VM_VHD_LINK" ]; then
+  if [ ! -e "$osname.qcow2.xz" ]; then
+    $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
+  fi
+
+  if [ ! -e "$osname.qcow2" ]; then
+    xz -d -T 0 --verbose  "$osname.qcow2.xz"
+  fi
+
+  $vmsh createVMFromVHD $osname $ostype $sshport
+
+  sleep 5
+
+else
+  echo "no VM_ISO_LINK or VM_VHD_LINK, can not build."
+  exit 1
 fi
-
-if [ ! -e "$osname.qcow2" ]; then
-  xz -d -T 0 --verbose  "$osname.qcow2.xz"
-fi
-
-
-$vmsh createVMFromVHD $osname $ostype $sshport
-
-
-
-sleep 5
-
-
 
 $vmsh startVM $osname
 
@@ -98,14 +127,21 @@ sleep 2
 
 ###############################################
 
-
-
-waitForText "$VM_LOGIN_TAG"
+if [ -e "hooks/waitForLoginTag.sh" ]; then
+  echo "hooks/waitForLoginTag.sh"
+  cat "hooks/waitForLoginTag.sh"
+  . "hooks/waitForLoginTag.sh"
+else
+  waitForText "$VM_LOGIN_TAG"
+fi
 
 sleep 3
 
-inputKeys "string root ; enter ; enter"
-
+inputKeys "string root; enter; sleep 1;"
+if [ "$VM_ROOT_PASSWORD" ]; then
+  inputKeys "string $VM_ROOT_PASSWORD ; enter"
+fi
+inputKeys "enter"
 sleep 2
 
 
@@ -243,7 +279,12 @@ else
   $vmsh addSSHAuthorizedKeys $osname-$VM_RELEASE-id_rsa.pub
   $vmsh startVM $osname
   $vmsh waitForVMReady $osname
-  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
+  if [ "$VM_RSYNC_PKG" ]; then
+    ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG"
+  fi
+  if [ "$VM_SSHFS_PKG" ]; then
+    ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
+  fi
 fi
 
 
