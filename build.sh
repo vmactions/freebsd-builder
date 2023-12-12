@@ -104,11 +104,10 @@ if [ "$VM_ISO_LINK" ]; then
   done
 
 elif [ "$VM_VHD_LINK" ]; then
-  if [ ! -e "$osname.qcow2.xz" ]; then
-    $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
-  fi
-
   if [ ! -e "$osname.qcow2" ]; then
+    if [ ! -e "$osname.qcow2.xz" ]; then
+      $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
+    fi
     xz -d -T 0 --verbose  "$osname.qcow2.xz"
   fi
 
