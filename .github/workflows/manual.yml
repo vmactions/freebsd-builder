@@ -20,7 +20,7 @@ jobs:
         port: 8000
     - name: Run vnc tunnel
       id: test
-      uses: vmactions/ngrok-tunnel@v0.0.1
+      uses: vmactions/ngrok-tunnel@v0
       with:
         protocol: tcp
         port: 5900
