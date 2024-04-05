@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/vmactions/freebsd-builder/actions/workflows/build.yml/badge.svg)](https://github.com/vmactions/freebsd-builder/actions/workflows/build.yml)
 
-Latest: v0.9.4
+Latest: v0.9.5
 
 
 The image builder for [freebsd-vm](https://github.com/vmactions/freebsd-vm)
