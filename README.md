@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/vmactions/freebsd-builder/actions/workflows/build.yml/badge.svg)](https://github.com/vmactions/freebsd-builder/actions/workflows/build.yml)
 
-Latest: v0.9.5
+Latest: v0.9.6
 
 
 The image builder for [freebsd-vm](https://github.com/vmactions/freebsd-vm)
@@ -20,6 +20,6 @@ How to use:
 
     Just clone the repo. and run:
     ```bash
-    bash build.sh conf/freebsd-14.0.conf
+    bash build.sh conf/freebsd-14.1.conf
     ```
    
