@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 
 _conf="$1"
@@ -120,22 +120,49 @@ else
   exit 1
 fi
 
-$vmsh startVM $osname
 
-sleep 2
+echo "VM image size immediately after install:"
+ls -lh ${osname}.qcow2
 
+
+start_and_wait() {
+  $vmsh startVM $osname
+  sleep 2
+  if [ -e "hooks/waitForLoginTag.sh" ]; then
+    echo "hooks/waitForLoginTag.sh"
+    cat "hooks/waitForLoginTag.sh"
+    . "hooks/waitForLoginTag.sh"
+  else
+    waitForText "$VM_LOGIN_TAG"
+  fi
+
+  sleep 3
+}
+
+shutdown_and_wait() {
+  ssh $osname  "$VM_SHUTDOWN_CMD"
+
+  sleep 30
+
+  if $vmsh isRunning $osname; then
+    if ! $vmsh shutdownVM $osname; then
+      echo "shutdown error"
+    fi
+  fi
+
+  while $vmsh isRunning $osname; do
+    sleep 5
+  done
+}
+
+restart_and_wait() {
+  shutdown_and_wait
+  start_and_wait
+}
 
 ###############################################
 
-if [ -e "hooks/waitForLoginTag.sh" ]; then
-  echo "hooks/waitForLoginTag.sh"
-  cat "hooks/waitForLoginTag.sh"
-  . "hooks/waitForLoginTag.sh"
-else
-  waitForText "$VM_LOGIN_TAG"
-fi
-
-sleep 3
+start_and_wait
 
 inputKeys "string root; enter; sleep 1;"
 if [ "$VM_ROOT_PASSWORD" ]; then
@@ -184,25 +211,19 @@ echo "     ServerAliveInterval 1" >>.ssh/config
 
 EOF
 
-
 ###############################################################
-
 
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
   ssh $osname sh<"hooks/postBuild.sh"
-fi
 
+  # Reboot here, possible there were system updates done that need
+  # a reboot to take effect before more operations can be done
+  restart_and_wait
+fi
 
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
-
-
-if [ "$VM_PRE_INSTALL_PKGS" ]; then
-  echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
-  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
-fi
-
 
 #upload reboot.sh
 if [ -e "hooks/reboot.sh" ]; then
@@ -220,7 +241,6 @@ END
 EOF
 fi
 
-
 #set cronjob
 ssh "$osname" sh <<EOF
 chmod +x /reboot.sh
@@ -235,37 +255,41 @@ crontab -l
 EOF
 
 
-ssh $osname  "$VM_SHUTDOWN_CMD"
-
-sleep 30
-
-###############################################################
-
-if $vmsh isRunning $osname; then
-  if ! $vmsh shutdownVM $osname; then
-    echo "shutdown error"
-  fi
+# Install any requested packages
+if [ "$VM_PRE_INSTALL_PKGS" ]; then
+  echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
 
-while $vmsh isRunning $osname; do
-  sleep 5
-done
+if [ -e "hooks/finalize.sh" ]; then
+  echo "hooks/finalize.sh"
+  cat "hooks/finalize.sh"
+  ssh $osname sh<"hooks/finalize.sh"
+fi
 
+# Done!
+shutdown_and_wait
 
 ##############################################################
 
+if [ "$VM_ISO_LINK" ]; then
+  echo "Clean up ISO for more space"
+  sudo rm -f ${osname}.iso
+fi
 
+echo "contents of home directory:"
+ls -lah
 
+echo "free space:"
+df -h
 
 ova="$osname-$VM_RELEASE.qcow2"
-
-
 echo "Exporting $ova"
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
-
+echo "contents after export:"
 ls -lah
 
 
