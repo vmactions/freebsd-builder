@@ -122,7 +122,7 @@ fi
 
 
 echo "VM image size immediately after install:"
-ls -lh ${osname}.qcow2
+ls -lh
 
 
 start_and_wait() {
