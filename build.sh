@@ -64,10 +64,10 @@ chmod +x "$vmsh"
 
 
 
-$vmsh startWeb $osname
+$vmsh startWeb $osname "needOCR"
 
 
-$vmsh setup 
+$vmsh setup "needOCR"
 
 if ! $vmsh clearVM $osname; then
   echo "vm does not exists"
