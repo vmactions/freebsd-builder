@@ -33,7 +33,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["13.3", "13.4", "14.1", "14.2", "15.0"]
+        os: ["13.3", "13.4", "14.1", "14.2", "14.2-aarch64", "15.0"]
     runs-on: ubuntu-24.04
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
