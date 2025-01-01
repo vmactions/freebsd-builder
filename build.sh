@@ -283,11 +283,18 @@ ls -lah
 echo "free space:"
 df -h
 
-ova="$osname-$VM_RELEASE.qcow2"
+
+
+output="$osname-$VM_RELEASE"
+if [ "$VM_ARCH" ]; then
+  output="$osname-$VM_RELEASE-$VM_ARCH"
+fi
+
+ova="$output.qcow2"
 echo "Exporting $ova"
 $vmsh exportOVA $osname "$ova"
 
-cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
+cp ~/.ssh/id_rsa  $output-host.id_rsa
 
 echo "contents after export:"
 ls -lah
