@@ -107,7 +107,7 @@ if [ "$VM_ISO_LINK" ]; then
   fi
 
   while $vmsh isRunning $osname; do
-    sleep 5
+    sleep 10
   done
   if [ "$VM_USE_CONSOLE_BUILD" ]; then
     $vmsh closeConsole "$osname"
@@ -180,6 +180,9 @@ restart_and_wait() {
 
 
 #start the installed vm, and initialize the ssh access:
+
+#disable console, it will use the vnc console from now on
+export VM_USE_CONSOLE_BUILD=""
 
 start_and_wait
 
