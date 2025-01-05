@@ -112,6 +112,10 @@ if [ "$VM_ISO_LINK" ]; then
   if [ "$VM_USE_CONSOLE_BUILD" ]; then
     $vmsh closeConsole "$osname"
   fi
+
+  #disable console, it will use the vnc console from now on, for OpenBSD
+  export VM_USE_CONSOLE_BUILD=""
+
 elif [ "$VM_VHD_LINK" ]; then
   #if the vm disk is already provided FreeBSD, just import it.
   if [ ! -e "$osname.qcow2" ]; then
@@ -181,8 +185,7 @@ restart_and_wait() {
 
 #start the installed vm, and initialize the ssh access:
 
-#disable console, it will use the vnc console from now on
-export VM_USE_CONSOLE_BUILD=""
+
 
 start_and_wait
 
@@ -216,6 +219,10 @@ echo >>enablessh.local
 
 
 $vmsh inputFile $osname enablessh.local
+
+
+#disable console, it will use the vnc console from now on for FreeBSD
+export VM_USE_CONSOLE_BUILD=""
 
 
 ###############################################################
