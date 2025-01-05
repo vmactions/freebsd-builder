@@ -116,7 +116,8 @@ if [ "$VM_ISO_LINK" ]; then
   if [[ "$VM_ISO_LINK" == *"img" ]]; then
     $vmsh detachIMG "$osname"
   else
-    $vmsh detachISO "$osname"
+    #no need to detach
+    #$vmsh detachISO "$osname"
   fi
 
 elif [ "$VM_VHD_LINK" ]; then
