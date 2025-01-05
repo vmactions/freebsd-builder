@@ -33,6 +33,8 @@ export VM_RELEASE
 export VM_OCR
 export VM_DISK
 export VM_ARCH
+export VM_USE_CONSOLE_BUILD
+
 
 
 ##############################################################
@@ -75,9 +77,14 @@ fi
 
 
 if [ "$VM_ISO_LINK" ]; then
+  #start from iso, install to the vir disk
+
   $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
 
   sleep 2
+  if [ "$VM_USE_CONSOLE_BUILD" ]; then
+    $vmsh openConsole "$osname"
+  fi
 
   if [ -e "hooks/installOpts.sh" ]; then
     echo "hooks/installOpts.sh"
@@ -102,8 +109,11 @@ if [ "$VM_ISO_LINK" ]; then
   while $vmsh isRunning $osname; do
     sleep 5
   done
-
+  if [ "$VM_USE_CONSOLE_BUILD" ]; then
+    $vmsh closeConsole "$osname"
+  fi
 elif [ "$VM_VHD_LINK" ]; then
+  #if the vm disk is already provided FreeBSD, just import it.
   if [ ! -e "$osname.qcow2" ]; then
     if [ ! -e "$osname.qcow2.xz" ]; then
       $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
@@ -128,6 +138,9 @@ ls -lh
 start_and_wait() {
   $vmsh startVM $osname
   sleep 2
+  if [ "$VM_USE_CONSOLE_BUILD" ]; then
+    $vmsh openConsole "$osname"
+  fi
   if [ -e "hooks/waitForLoginTag.sh" ]; then
     echo "hooks/waitForLoginTag.sh"
     cat "hooks/waitForLoginTag.sh"
@@ -153,6 +166,9 @@ shutdown_and_wait() {
   while $vmsh isRunning $osname; do
     sleep 5
   done
+  if [ "$VM_USE_CONSOLE_BUILD" ]; then
+    $vmsh closeConsole "$osname"
+  fi
 }
 
 restart_and_wait() {
@@ -161,6 +177,9 @@ restart_and_wait() {
 }
 
 ###############################################
+
+
+#start the installed vm, and initialize the ssh access:
 
 start_and_wait
 
