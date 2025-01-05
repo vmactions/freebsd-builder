@@ -34,7 +34,7 @@ export VM_OCR
 export VM_DISK
 export VM_ARCH
 export VM_USE_CONSOLE_BUILD
-
+export VM_USE_CONSOLE_BUILD_SSH
 
 
 ##############################################################
@@ -113,8 +113,11 @@ if [ "$VM_ISO_LINK" ]; then
     $vmsh closeConsole "$osname"
   fi
 
-  #disable console, it will use the vnc console from now on, for OpenBSD
-  export VM_USE_CONSOLE_BUILD=""
+  if [[ "$VM_ISO_LINK" == *"img" ]]; then
+    $vmsh detachIMG "$osname"
+  else
+    $vmsh detachISO "$osname"
+  fi
 
 elif [ "$VM_VHD_LINK" ]; then
   #if the vm disk is already provided FreeBSD, just import it.
@@ -186,6 +189,9 @@ restart_and_wait() {
 #start the installed vm, and initialize the ssh access:
 
 
+if [ -z "$VM_USE_CONSOLE_BUILD_SSH" ]; then
+  export VM_USE_CONSOLE_BUILD=""
+fi
 
 start_and_wait
 
@@ -221,7 +227,7 @@ echo >>enablessh.local
 $vmsh inputFile $osname enablessh.local
 
 
-#disable console, it will use the vnc console from now on for FreeBSD
+
 export VM_USE_CONSOLE_BUILD=""
 
 
