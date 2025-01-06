@@ -42,7 +42,8 @@ export VM_USE_CONSOLE_BUILD_SSH
 
 waitForText() {
   _text="$1"
-  $vmsh waitForText $osname "$_text"
+  _sec="$2"
+  $vmsh waitForText $osname "$_text" "$_sec"
 }
 
 #keys splitted by ;
@@ -193,6 +194,9 @@ fi
 
 start_and_wait
 
+inputKeys "enter"
+sleep 2
+
 inputKeys "string root; enter; sleep 1;"
 if [ "$VM_ROOT_PASSWORD" ]; then
   inputKeys "string $VM_ROOT_PASSWORD ; enter"
@@ -200,6 +204,7 @@ fi
 inputKeys "enter"
 sleep 2
 
+$vmsh screenText $osname
 
 if [ ! -e ~/.ssh/id_rsa ] ; then 
   ssh-keygen -f  ~/.ssh/id_rsa -q -N "" 
@@ -218,9 +223,12 @@ echo "" >>enablessh.local
 
 echo >>enablessh.local
 echo "chmod 600 ~/.ssh/authorized_keys">>enablessh.local
-echo "exit">>enablessh.local
+
+echo "">>enablessh.local
 echo >>enablessh.local
 
+
+cat enablessh.local
 
 $vmsh inputFile $osname enablessh.local
 
