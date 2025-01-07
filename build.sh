@@ -225,7 +225,7 @@ cat enablessh.local
 
 if [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
   vmip=$($vmsh getVMIP $osname)
-  sshpass -p "$VM_ROOT_PASSWORD" ssh root@$vmip <enablessh.local
+  sshpass -p "$VM_ROOT_PASSWORD" ssh -t  root@$vmip <enablessh.local
 else
   inputKeys "string root; enter; sleep 1;"
   if [ "$VM_ROOT_PASSWORD" ]; then
