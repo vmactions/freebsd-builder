@@ -34,8 +34,8 @@ export VM_OCR
 export VM_DISK
 export VM_ARCH
 export VM_USE_CONSOLE_BUILD
-export VM_USE_CONSOLE_BUILD_SSH
-
+export VM_USE_SSHROOT_BUILD_SSH
+export VM_NO_VNC_BUILD
 
 ##############################################################
 
@@ -188,23 +188,12 @@ restart_and_wait() {
 #start the installed vm, and initialize the ssh access:
 
 
-if [ -z "$VM_USE_CONSOLE_BUILD_SSH" ]; then
+if [ -z "$VM_NO_VNC_BUILD" ]; then
   export VM_USE_CONSOLE_BUILD=""
 fi
 
 start_and_wait
 
-inputKeys "enter"
-sleep 2
-
-inputKeys "string root; enter; sleep 1;"
-if [ "$VM_ROOT_PASSWORD" ]; then
-  inputKeys "string $VM_ROOT_PASSWORD ; enter"
-fi
-inputKeys "enter"
-sleep 2
-
-$vmsh screenText $osname
 
 if [ ! -e ~/.ssh/id_rsa ] ; then 
   ssh-keygen -f  ~/.ssh/id_rsa -q -N "" 
@@ -213,11 +202,14 @@ fi
 cat enablessh.txt >enablessh.local
 
 
+echo "echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys" >>enablessh.local
+echo "" >>enablessh.local
+echo "" >>enablessh.local
+echo "" >>enablessh.local
+
 #add ssh key twice, to avoid bugs.
 echo "echo '$(base64 -w 0 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
 echo "" >>enablessh.local
-
-echo "echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys" >>enablessh.local
 echo "" >>enablessh.local
 
 
@@ -230,12 +222,22 @@ echo >>enablessh.local
 
 cat enablessh.local
 
-$vmsh inputFile $osname enablessh.local
 
-$vmsh screenText $osname
+if [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
+  vmip=$($vmsh getVMIP $osname)
+  sshpass -p "$VM_ROOT_PASSWORD" ssh root@$vmip <enablessh.local
+else
+  inputKeys "string root; enter; sleep 1;"
+  if [ "$VM_ROOT_PASSWORD" ]; then
+    inputKeys "string $VM_ROOT_PASSWORD ; enter"
+  fi
+  inputKeys "enter"
+  sleep 2
 
-
-export VM_USE_CONSOLE_BUILD=""
+  $vmsh screenText $osname
+  $vmsh inputFile $osname enablessh.local
+  $vmsh screenText $osname
+fi
 
 
 ###############################################################
@@ -248,7 +250,7 @@ echo 'StrictHostKeyChecking=no' >.ssh/config
 
 echo "Host host" >>.ssh/config
 echo "     HostName  192.168.122.1" >>.ssh/config
-echo "     User runner" >>.ssh/config
+echo "     User $USER" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
 
 EOF
@@ -362,5 +364,7 @@ else
     ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
   fi
 fi
+
+echo "Build finished."
 
 
