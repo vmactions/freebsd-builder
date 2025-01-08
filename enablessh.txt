@@ -29,12 +29,16 @@ echo 'PasswordAuthentication yes'  >> /etc/ssh/sshd_config
 
 echo 'AcceptEnv   *'  >> /etc/ssh/sshd_config
 
+rm -f ~/.ssh/id_rsa
+
 ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N ''
 
 
-service sshd restart
+/etc/rc.d/sshd restart
 
 
+
+echo "enable ssh finished."
 
 
 
