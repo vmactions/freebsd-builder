@@ -226,6 +226,12 @@ cat enablessh.local
 if [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
   vmip=$($vmsh getVMIP $osname)
   sshpass -p "$VM_ROOT_PASSWORD" ssh -o StrictHostKeyChecking=no -tt  root@$vmip TERM=xterm <enablessh.local
+  #sleep for the sshd server to restart
+  sleep 10
+  inputKeys "enter"
+  sleep 2
+  inputKeys "enter"
+  sleep 2
   echo "check ssh access:"
   ssh -vv root@$vmip pwd
   echo "ssh OK"
@@ -240,6 +246,12 @@ else
   $vmsh screenText $osname
   $vmsh inputFile $osname enablessh.local
   $vmsh screenText $osname
+  #sleep for the sshd server to restart
+  sleep 10
+  inputKeys "enter"
+  sleep 2
+  inputKeys "enter"
+  sleep 2
 fi
 
 
