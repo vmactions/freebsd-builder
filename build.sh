@@ -33,6 +33,7 @@ export VM_RELEASE
 export VM_OCR
 export VM_DISK
 export VM_ARCH
+export VM_CPU
 export VM_USE_CONSOLE_BUILD
 export VM_USE_SSHROOT_BUILD_SSH
 export VM_NO_VNC_BUILD
@@ -121,10 +122,21 @@ if [ "$VM_ISO_LINK" ]; then
 elif [ "$VM_VHD_LINK" ]; then
   #if the vm disk is already provided FreeBSD, just import it.
   if [ ! -e "$osname.qcow2" ]; then
-    if [ ! -e "$osname.qcow2.xz" ]; then
-      $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
+    if [[ "$VM_VHD_LINK" == *"img.gz" ]]; then
+      _img="$osname.img"
+      if [ ! -e "$_img" ]; then
+        rm -f "$_img.gz"
+        $vmsh download "$VM_VHD_LINK" "$_img.gz"
+        gunzip -c "$_img.gz" > "$_img"
+      fi
+        qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
+      else
+      if [ ! -e "$osname.qcow2.xz" ]; then
+        $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
+      fi
+      xz -d -T 0 --verbose  "$osname.qcow2.xz"
     fi
-    xz -d -T 0 --verbose  "$osname.qcow2.xz"
+
   fi
 
   $vmsh createVMFromVHD $osname $ostype $sshport
@@ -275,7 +287,7 @@ EOF
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
-  ssh $osname sh<"hooks/postBuild.sh"
+  ssh $osname VM_RELEASE="$VM_RELEASE" sh<"hooks/postBuild.sh"
 
   # Reboot here, possible there were system updates done that need
   # a reboot to take effect before more operations can be done
