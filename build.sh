@@ -11,6 +11,11 @@ if [ -z "$_conf" ] ; then
 fi
 
 
+
+
+VM_HOST_IP="192.168.122.1"
+VM_HOST_IP_LISTEN_PORT=48392
+
 . "$_conf"
 
 
@@ -84,9 +89,8 @@ if [ "$VM_ISO_LINK" ]; then
   $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
 
   sleep 2
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh openConsole "$osname"
-  fi
+
+  $vmsh openConsole "$osname"
 
   if [ -e "hooks/installOpts.sh" ]; then
     echo "hooks/installOpts.sh"
@@ -111,9 +115,9 @@ if [ "$VM_ISO_LINK" ]; then
   while $vmsh isRunning $osname; do
     sleep 20
   done
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh closeConsole "$osname"
-  fi
+
+  $vmsh closeConsole "$osname"
+
 
   if [[ "$VM_ISO_LINK" == *"img" ]]; then
     $vmsh detachIMG "$osname"
@@ -129,8 +133,8 @@ elif [ "$VM_VHD_LINK" ]; then
         $vmsh download "$VM_VHD_LINK" "$_img.gz"
         gunzip -c "$_img.gz" > "$_img"
       fi
-        qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
-      else
+      qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
+    else
       if [ ! -e "$osname.qcow2.xz" ]; then
         $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
       fi
@@ -156,9 +160,8 @@ ls -lh
 start_and_wait() {
   $vmsh startVM $osname
   sleep 2
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh openConsole "$osname"
-  fi
+  $vmsh openConsole "$osname"
+
   if [ -e "hooks/waitForLoginTag.sh" ]; then
     echo "hooks/waitForLoginTag.sh"
     cat "hooks/waitForLoginTag.sh"
@@ -184,9 +187,9 @@ shutdown_and_wait() {
   while $vmsh isRunning $osname; do
     sleep 5
   done
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh closeConsole "$osname"
-  fi
+
+  $vmsh closeConsole "$osname"
+
 }
 
 restart_and_wait() {
@@ -276,7 +279,7 @@ ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=no' >.ssh/config
 
 echo "Host host" >>.ssh/config
-echo "     HostName  192.168.122.1" >>.ssh/config
+echo "     HostName  $VM_HOST_IP" >>.ssh/config
 echo "     User $USER" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
 
@@ -312,7 +315,11 @@ if [ -e "hooks/reboot.sh" ]; then
 else
   ssh "$osname" "cat - >/reboot.sh" <<EOF
 sleep 5
-ssh host sh <<END
+myip=\$(ifconfig | grep "inet " | awk '{print \$2}' | grep 192.168 | head -1)
+if [ "\$myip" ]; then
+  echo "\$myip" | timeout 2 nc "$VM_HOST_IP" "$VM_HOST_IP_LISTEN_PORT"
+fi
+timeout 5 ssh host sh <<END
 env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
 
 END
