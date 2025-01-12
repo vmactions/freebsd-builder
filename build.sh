@@ -350,7 +350,7 @@ fi
 if [ -e "hooks/finalize.sh" ]; then
   echo "hooks/finalize.sh"
   cat "hooks/finalize.sh"
-  ssh $osname sh<"hooks/finalize.sh"
+  ssh $osname VM_RELEASE="$VM_RELEASE" sh<"hooks/finalize.sh"
 fi
 
 # Done!
