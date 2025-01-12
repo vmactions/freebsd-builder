@@ -290,7 +290,8 @@ EOF
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
-  ssh $osname VM_RELEASE="$VM_RELEASE" sh<"hooks/postBuild.sh"
+  export VM_RELEASE
+  ssh -o "SendEnv=VM_RELEASE" $osname sh<"hooks/postBuild.sh"
 
   # Reboot here, possible there were system updates done that need
   # a reboot to take effect before more operations can be done
@@ -350,7 +351,8 @@ fi
 if [ -e "hooks/finalize.sh" ]; then
   echo "hooks/finalize.sh"
   cat "hooks/finalize.sh"
-  ssh $osname VM_RELEASE="$VM_RELEASE" sh<"hooks/finalize.sh"
+  export VM_RELEASE
+  ssh -o "SendEnv=VM_RELEASE" $osname sh<"hooks/finalize.sh"
 fi
 
 # Done!
