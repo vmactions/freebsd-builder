@@ -316,11 +316,7 @@ if [ -e "hooks/reboot.sh" ]; then
 else
   ssh "$osname" "cat - >/reboot.sh" <<EOF
 sleep 5
-myip=\$(ifconfig | grep "inet " | awk '{print \$2}' | grep 192.168 | head -1)
-if [ "\$myip" ]; then
-  echo "\$myip" | timeout 2 nc "$VM_HOST_IP" "$VM_HOST_IP_LISTEN_PORT"
-fi
-timeout 20 ssh host sh <<END
+ssh host sh <<END
 env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
 
 END
