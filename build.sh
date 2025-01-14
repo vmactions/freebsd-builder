@@ -11,11 +11,6 @@ if [ -z "$_conf" ] ; then
 fi
 
 
-
-
-VM_HOST_IP="192.168.122.1"
-VM_HOST_IP_LISTEN_PORT=48392
-
 . "$_conf"
 
 
@@ -279,7 +274,7 @@ ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=no' >.ssh/config
 
 echo "Host host" >>.ssh/config
-echo "     HostName  $VM_HOST_IP" >>.ssh/config
+echo "     HostName  192.168.122.1" >>.ssh/config
 echo "     User $USER" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
 
