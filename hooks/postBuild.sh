@@ -15,6 +15,8 @@ service ntpd enable
 
 service ntpd start
 
+kldload  fusefs
+
 
 
 
