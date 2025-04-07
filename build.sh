@@ -269,6 +269,20 @@ fi
 
 $vmsh addSSHHost  $osname
 
+echo "Sleep for the sshd to restart"
+sleep 10
+
+_retry=0
+while ! timeout 2 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $osname exit >/dev/null 2>&1; do
+  echo "ssh is not ready, just wait."
+  sleep 10
+  _retry=$(($_retry + 1))
+  if [ $_retry -gt 10 ]; then
+    echo "ssh is failed."
+    exit 1
+  fi
+done
+
 
 ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=no' >.ssh/config
@@ -291,8 +305,20 @@ if [ -e "hooks/postBuild.sh" ]; then
   # Reboot here, possible there were system updates done that need
   # a reboot to take effect before more operations can be done
   restart_and_wait
-fi
 
+  #wait for the sshd to start
+  _retry=0
+  while ! timeout 2 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $osname exit >/dev/null 2>&1; do
+    echo "ssh is not ready, just wait."
+    sleep 10
+    _retry=$(($_retry + 1))
+    if [ $_retry -gt 10 ]; then
+      echo "ssh is failed."
+      exit 1
+    fi
+  done
+
+fi
 
 output="$osname-$VM_RELEASE"
 if [ "$VM_ARCH" ]; then
@@ -391,6 +417,13 @@ else
   if [ "$VM_SSHFS_PKG" ]; then
     ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
   fi
+  if ssh $osname sh -c env | grep GITHUB_ ; then
+    echo "SendEnv OK"
+  else
+    echo "SendEnv is not working"
+    exit 1
+  fi
+
 fi
 
 echo "Build finished."
