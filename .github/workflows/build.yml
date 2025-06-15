@@ -34,7 +34,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["13.4", "13.4-aarch64", "13.5", "13.5-aarch64", "14.1", "14.1-aarch64", "14.2", "14.2-aarch64", "14.2-riscv64", "15.0", "15.0-aarch64", "15.0-riscv64"]
+        os: ["13.4", "13.4-aarch64", "13.5", "13.5-aarch64", "14.1", "14.1-aarch64", "14.2", "14.2-aarch64", "14.2-riscv64", "14.3", "14.3-aarch64", "15.0", "15.0-aarch64", "15.0-riscv64"]
     runs-on: ubuntu-24.04
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
