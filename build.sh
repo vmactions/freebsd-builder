@@ -336,7 +336,20 @@ if [ -e "hooks/reboot.sh" ]; then
   scp hooks/reboot.sh $osname:/reboot.sh
 else
   ssh "$osname" "cat - >/reboot.sh" <<EOF
-sleep 5
+sleep 2
+for i in \$(seq 1 100) ; do 
+  if ssh host exit; then
+    break;
+  fi
+  sleep 3
+done;
+if ! ssh host exit; then
+  #still not connected
+  #shutdown
+  # $VM_SHUTDOWN_CMD
+  echo "Connection failed."
+fi
+
 ssh host sh <<END
 env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
 
