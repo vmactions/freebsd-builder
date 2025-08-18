@@ -312,7 +312,7 @@ if [ -e "hooks/postBuild.sh" ]; then
     echo "ssh is not ready, just wait."
     sleep 10
     _retry=$(($_retry + 1))
-    if [ $_retry -gt 10 ]; then
+    if [ $_retry -gt 30 ]; then
       echo "ssh is failed."
       exit 1
     fi
