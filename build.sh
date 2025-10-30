@@ -37,6 +37,8 @@ export VM_CPU
 export VM_USE_CONSOLE_BUILD
 export VM_USE_SSHROOT_BUILD_SSH
 export VM_NO_VNC_BUILD
+export VM_NIC
+
 
 ##############################################################
 
