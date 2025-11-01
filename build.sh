@@ -37,6 +37,7 @@ export VM_CPU
 export VM_USE_CONSOLE_BUILD
 export VM_USE_SSHROOT_BUILD_SSH
 export VM_NO_VNC_BUILD
+export VM_USE_CONSOLE_ENABLE_SSH
 export VM_NIC
 
 
@@ -211,6 +212,7 @@ if [ ! -e ~/.ssh/id_rsa ] ; then
   ssh-keygen -f  ~/.ssh/id_rsa -q -N "" 
 fi
 
+rm -f enablessh.local
 cat enablessh.txt >enablessh.local
 
 
@@ -256,7 +258,12 @@ else
   sleep 2
 
   $vmsh screenText $osname
-  $vmsh inputFile $osname enablessh.local
+  if [ "$VM_USE_CONSOLE_ENABLE_SSH" ]; then
+    #for openbsd 7.7/7.8
+    $vmsh inputFileConsole $osname enablessh.local
+  else
+    $vmsh inputFile $osname enablessh.local
+  fi
   $vmsh screenText $osname
   #sleep for the sshd server to restart
   sleep 10
@@ -275,13 +282,35 @@ echo "Sleep for the sshd to restart"
 sleep 10
 
 _retry=0
+_restarted=""
 while ! timeout 2 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $osname exit >/dev/null 2>&1; do
   echo "ssh is not ready, just wait."
   sleep 10
   _retry=$(($_retry + 1))
-  if [ $_retry -gt 100 ]; then
-    echo "ssh is failed."
-    exit 1
+  if [ $_retry -gt 20 ]; then
+    if [ "$_restarted" ]; then
+      echo "ssh is failed. restarted but still not running"
+      exit 1
+    fi
+    echo "ssh is failed. lets try restart the vm"
+    _restarted=1
+
+    #shutdown
+    if $vmsh isRunning $osname; then
+      if ! $vmsh shutdownVM $osname; then
+        echo "shutdown error"
+        exit 1
+      fi
+    fi
+
+    while $vmsh isRunning $osname; do
+      sleep 5
+    done
+    $vmsh closeConsole "$osname"
+
+    #start vm
+    start_and_wait
+    _retry=0
   fi
 done
 
@@ -293,6 +322,7 @@ echo "Host host" >>.ssh/config
 echo "     HostName  192.168.122.1" >>.ssh/config
 echo "     User $USER" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
+
 
 EOF
 
@@ -432,7 +462,7 @@ else
   if [ "$VM_SSHFS_PKG" ]; then
     ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
   fi
-  if ssh $osname sh -c env | grep GITHUB_ ; then
+  if GITHUB_VMACTIONS=1 ssh $osname sh -c env | grep GITHUB_ ; then
     echo "SendEnv OK"
   else
     echo "SendEnv is not working"
