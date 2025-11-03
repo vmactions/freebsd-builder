@@ -6,7 +6,6 @@ if [ "$VM_ARCH" = "riscv64" ]; then
   waitForText "7. Boot Options" 20
   sleep  20
   inputKeys "enter"
-  clear
 fi
 
 
