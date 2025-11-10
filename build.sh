@@ -438,7 +438,8 @@ df -h
 
 ova="$output.qcow2"
 echo "Exporting $ova"
-$vmsh exportOVA $osname "$ova"
+xml="$output.xml"
+$vmsh exportOVA $osname "$ova" "$xml"
 
 cp ~/.ssh/id_rsa  $output-host.id_rsa
 
