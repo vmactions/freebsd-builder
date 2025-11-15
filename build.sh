@@ -37,7 +37,9 @@ export VM_CPU
 export VM_USE_CONSOLE_BUILD
 export VM_USE_SSHROOT_BUILD_SSH
 export VM_NO_VNC_BUILD
-export VM_USE_CONSOLE_ENABLE_SSH
+export VM_USE_NC_ENABLE_SSH
+export VM_USE_TELNET_ENABLE_SSH
+export VM_USE_BASH_ENABLE_SSH
 export VM_NIC
 
 
@@ -132,6 +134,14 @@ elif [ "$VM_VHD_LINK" ]; then
         gunzip -c "$_img.gz" > "$_img"
       fi
       qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
+    elif [[ "$VM_VHD_LINK" == *"img.zst" ]]; then
+      _img="$osname.img"
+      if [ ! -e "$_img" ]; then
+        rm -f "$_img.zst"
+        $vmsh download "$VM_VHD_LINK" "$_img.zst"
+        zstd -f -d "$_img.zst" -o "$_img"
+      fi
+      qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
     else
       if [ ! -e "$osname.qcow2.xz" ]; then
         $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
@@ -202,6 +212,7 @@ restart_and_wait() {
 
 
 if [ -z "$VM_NO_VNC_BUILD" ]; then
+  #switch back to use vnc
   export VM_USE_CONSOLE_BUILD=""
 fi
 
@@ -250,20 +261,42 @@ if [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
   ssh -vv root@$vmip pwd
   echo "ssh OK"
 else
-  inputKeys "string root; enter; sleep 1;"
+  echo "login as root at console."
+  inputKeys "enter"
+  inputKeys "enter"
+  sleep 20
+  inputKeys "enter"
+  inputKeys "enter"
+  inputKeys "string root; enter; sleep 5;"
   if [ "$VM_ROOT_PASSWORD" ]; then
     inputKeys "string $VM_ROOT_PASSWORD ; enter"
+    sleep 10
   fi
   inputKeys "enter"
-  sleep 2
+  sleep 20
+  inputKeys "enter"
 
   $vmsh screenText $osname
-  if [ "$VM_USE_CONSOLE_ENABLE_SSH" ]; then
+
+  if [ -e "hooks/enableNetwork.sh" ]; then
+    echo "hooks/enableNetwork.sh"
+    cat "hooks/enableNetwork.sh"
+    echo "To enabled network, we have to input throw stdin"
+    $vmsh inputFileStdIn "$osname" hooks/enableNetwork.sh
+    $vmsh screenText $osname
+    sleep 60
+  fi
+
+  if [ "$VM_USE_NC_ENABLE_SSH" ]; then
     #for openbsd 7.7/7.8
-    $vmsh inputFileConsole $osname enablessh.local
+    $vmsh inputFileNC $osname enablessh.local
+  elif [ "$VM_USE_BASH_ENABLE_SSH" ]; then
+    #for openIndiana
+    $vmsh inputFileBash $osname enablessh.local
   else
     $vmsh inputFile $osname enablessh.local
   fi
+  sleep 60
   $vmsh screenText $osname
   #sleep for the sshd server to restart
   sleep 10
@@ -287,7 +320,7 @@ while ! timeout 2 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nul
   echo "ssh is not ready, just wait."
   sleep 10
   _retry=$(($_retry + 1))
-  if [ $_retry -gt 20 ]; then
+  if [ $_retry -gt 100 ]; then
     if [ "$_restarted" ]; then
       echo "ssh is failed. restarted but still not running"
       exit 1
@@ -489,7 +522,9 @@ else
     ssh $osname cat /etc/ssh/sshd_config
     exit 1
   fi
-
+  #check if the /home dir is writable
+  ssh $osname mkdir -p $HOME/work
+  ssh $osname ls -lah $HOME
 fi
 
 echo "Build finished."
