@@ -490,12 +490,14 @@ else
   $vmsh addSSHAuthorizedKeys $output-id_rsa.pub
   $vmsh startVM $osname
   $vmsh waitForVMReady $osname
-  if [ "$VM_RSYNC_PKG" ]; then
-    ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG"
-  fi
-  if [ "$VM_SSHFS_PKG" ]; then
-    ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
-  fi
+  #these packages should also be installed before.
+  #so remove the following code, since openIndiana returns error 4 if sshfs is already installed.
+  #if [ "$VM_RSYNC_PKG" ]; then
+  #  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG"
+  #fi
+  #if [ "$VM_SSHFS_PKG" ]; then
+  #  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
+  #fi
   if GITHUB_VMACTIONS=1 ssh $osname sh -c env | grep GITHUB_ ; then
     echo "SendEnv OK"
   else
