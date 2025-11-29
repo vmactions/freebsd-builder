@@ -13,14 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Creating web console
-      uses: vmactions/cf-tunnel@v0
+      uses: anyvm-org/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
         port: 8000
     - name: Run vnc tunnel
       id: test
-      uses: vmactions/ngrok-tunnel@v0
+      uses: anyvm-org/ngrok-tunnel@v0
       with:
         protocol: tcp
         port: 5900

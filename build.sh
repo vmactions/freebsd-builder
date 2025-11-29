@@ -498,7 +498,7 @@ else
   #if [ "$VM_SSHFS_PKG" ]; then
   #  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_SSHFS_PKG"
   #fi
-  if GITHUB_VMACTIONS=1 ssh $osname sh -c env | grep GITHUB_ ; then
+  if GITHUB_ANYVM=1 ssh $osname sh -c env | grep GITHUB_ ; then
     echo "SendEnv OK"
   else
     echo "SendEnv is not working"

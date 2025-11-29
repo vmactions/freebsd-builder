@@ -1,4 +1,9 @@
 name: "Build"
+
+permissions:
+  contents: write
+  packages: write
+
 on:
   push:
     branches:
@@ -47,7 +52,7 @@ jobs:
 #        tool-cache: false
     - uses: actions/checkout@v4
     - name: Creating Web console
-      uses: vmactions/cf-tunnel@v0
+      uses: anyvm-org/cf-tunnel@v0
       id: tunnel
       with:
         protocol: http
