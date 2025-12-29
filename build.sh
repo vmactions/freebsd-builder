@@ -86,7 +86,7 @@ fi
 if [ "$VM_ISO_LINK" ]; then
   #start from iso, install to the vir disk
 
-  $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
+  $vmsh createVM  "$VM_ISO_LINK" "$osname" "$ostype" "$sshport" "$VM_PRE_DISK_LINK"
 
   sleep 2
 
@@ -182,7 +182,9 @@ start_and_wait() {
 }
 
 shutdown_and_wait() {
-  ssh $osname  "$VM_SHUTDOWN_CMD"
+  if ! ssh -o ConnectTimeout=5 -o ServerAliveInterval=2 $osname  "$VM_SHUTDOWN_CMD"; then
+    echo "shutdown $?, haiku? but we just ignore it."
+  fi
 
   sleep 30
 
@@ -247,8 +249,10 @@ echo >>enablessh.local
 
 cat enablessh.local
 
-
-if [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
+if [ -e "hooks/enablessh.sh" ]; then
+    cat "hooks/enablessh.sh"
+    . "hooks/enablessh.sh"
+elif [ "$VM_USE_SSHROOT_BUILD_SSH" ]; then
   vmip=$($vmsh getVMIP $osname)
   sshpass -p "$VM_ROOT_PASSWORD" ssh -o StrictHostKeyChecking=no -tt  root@$vmip TERM=xterm <enablessh.local
   #sleep for the sshd server to restart
@@ -393,6 +397,7 @@ fi
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$output-id_rsa.pub
 
 
+if [ -z "$VM_NO_REBOOT_CRONTAB" ]; then
 
 #upload reboot.sh
 if [ -e "hooks/reboot.sh" ]; then
@@ -436,6 +441,10 @@ fi
 crontab -l
 
 EOF
+
+#VM_NO_REBOOT_CRONTAB
+
+fi
 
 
 # Install any requested packages
@@ -489,7 +498,14 @@ if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
 else
   $vmsh addSSHAuthorizedKeys $output-id_rsa.pub
   $vmsh startVM $osname
-  $vmsh waitForVMReady $osname
+  if [ -z "$VM_NO_REBOOT_CRONTAB" ]; then
+    $vmsh waitForVMReady $osname
+  else
+    while ! timeout 5 ssh $osname exit; do
+      echo not ready yet, just sleep.
+      sleep 5
+    done
+  fi
   #these packages should also be installed before.
   #so remove the following code, since openIndiana returns error 4 if sshfs is already installed.
   #if [ "$VM_RSYNC_PKG" ]; then
@@ -524,9 +540,15 @@ else
     ssh $osname cat /etc/ssh/sshd_config
     exit 1
   fi
-  #check if the /home dir is writable
-  ssh $osname mkdir -p $HOME/work
-  ssh $osname ls -lah $HOME
+  if [ "$osname" = "haiku" ]; then
+   #it's /boot/home
+   ssh $osname mkdir -p '$HOME/work'
+   ssh $osname ls -lah '$HOME'
+  else
+   #check if the /home dir is writable
+   ssh $osname mkdir -p $HOME/work
+   ssh $osname ls -lah $HOME
+  fi
 fi
 
 echo "Build finished."
