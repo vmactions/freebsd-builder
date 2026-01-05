@@ -377,7 +377,7 @@ if [ -e "hooks/postBuild.sh" ]; then
 
   #wait for the sshd to start
   _retry=0
-  while ! timeout 2 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $osname exit >/dev/null 2>&1; do
+  while ! timeout 5 ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR $osname exit >/dev/null 2>&1; do
     echo "ssh is not ready, just wait."
     sleep 10
     _retry=$(($_retry + 1))
@@ -397,7 +397,7 @@ fi
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$output-id_rsa.pub
 
 
-if [ -z "$VM_NO_REBOOT_CRONTAB" ]; then
+if [ "$VM_ENABLE_REBOOT_CRONTAB" ]; then
 
 #upload reboot.sh
 if [ -e "hooks/reboot.sh" ]; then
@@ -442,7 +442,7 @@ crontab -l
 
 EOF
 
-#VM_NO_REBOOT_CRONTAB
+#VM_ENABLE_REBOOT_CRONTAB
 
 fi
 
@@ -498,7 +498,7 @@ if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
 else
   $vmsh addSSHAuthorizedKeys $output-id_rsa.pub
   $vmsh startVM $osname
-  if [ -z "$VM_NO_REBOOT_CRONTAB" ]; then
+  if [ "$VM_ENABLE_REBOOT_CRONTAB" ]; then
     $vmsh waitForVMReady $osname
   else
     while ! timeout 5 ssh $osname exit; do
@@ -544,11 +544,17 @@ else
    #it's /boot/home
    ssh $osname mkdir -p '$HOME/work'
    ssh $osname ls -lah '$HOME'
+   echo "======Show ssh config: "
+   ssh $osname cat /boot/system/settings/ssh/sshd_config
   else
    #check if the /home dir is writable
    ssh $osname mkdir -p $HOME/work
    ssh $osname ls -lah $HOME
+   echo "======Show ssh config: "
+   ssh $osname cat /etc/ssh/sshd_config
   fi
+  
+  
 fi
 
 echo "Build finished."
