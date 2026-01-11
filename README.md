@@ -8,7 +8,13 @@ Latest: v1.1.4
 The image builder for `freebsd`
 
 
-How to use:
+All the supported releases are here:
+
+
+
+
+
+How to build:
 
 1. Use the [manual.yml](.github/workflows/manual.yml) to build manually.
    
