@@ -11,7 +11,7 @@ jobs:
       NGROK_TOKEN : ${{ secrets.NGROK_TOKEN }}
       SEC_VBOX : ${{ vars.SEC_VBOX }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Creating web console
       uses: anyvm-org/cf-tunnel@v0
       id: tunnel

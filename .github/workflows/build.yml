@@ -50,7 +50,7 @@ jobs:
 #        # this might remove tools that are actually needed,
 #        # if set to "true" but frees about 6 GB
 #        tool-cache: false
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Creating Web console
       uses: anyvm-org/cf-tunnel@v0
       id: tunnel
